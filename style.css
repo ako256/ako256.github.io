@@ -1,0 +1,171 @@
+:root {
+    --bar-color: dodgerblue;
+    --compare-color: orange;
+    --shift-color: red;
+    --sorted-color: mediumseagreen;
+    --bar-width: 30px; /* Default width, can be adjusted by JS */
+    --bar-gap: 3px;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
+    margin: 20px;
+    background-color: #f4f4f4;
+    color: #333;
+}
+
+h1 {
+    text-align: center;
+    color: #444;
+}
+
+.controls {
+    margin-bottom: 25px;
+    text-align: center;
+    background-color: #fff;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.controls label {
+    margin-right: 5px;
+}
+
+.controls input[type="text"] {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin-right: 10px;
+    min-width: 200px;
+}
+
+.controls button {
+    padding: 8px 15px;
+    background-color: #5cb85c;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.controls button:hover {
+    background-color: #4cae4c;
+}
+
+.controls button:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+}
+
+.controls input[type="range"] {
+    vertical-align: middle;
+    margin-left: 10px;
+}
+
+#speedValue {
+    display: inline-block;
+    min-width: 50px;
+    font-weight: bold;
+}
+
+
+#visualizationContainer {
+    margin-top: 20px;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+#arrayContainer {
+    display: flex;
+    /* justify-content: center; */ /* Use space-around or space-between for better spacing if needed */
+    align-items: flex-end; /* Align bars at the bottom */
+    height: 350px; /* Adjust height as needed */
+    border: 1px solid #ddd;
+    background-color: #f9f9f9;
+    padding: 10px;
+    position: relative; /* Needed for absolute positioning of bars if used for swap animation */
+    overflow-x: auto; /* Add scroll if too many bars */
+    overflow-y: hidden;
+    min-height: 100px; /* Ensure container has some height even when empty */
+}
+
+.bar {
+    display: flex; /* Use flex to center number inside */
+    flex-direction: column;
+    justify-content: flex-end; /* Number at the bottom */
+    align-items: center;
+    /* width: var(--bar-width); */ /* Width is now set dynamically */
+    margin: 0 var(--bar-gap);
+    background-color: var(--bar-color);
+    text-align: center;
+    color: white;
+    font-size: 0.8em;
+    font-weight: bold;
+    border-radius: 4px 4px 0 0; /* Slightly rounded top corners */
+    transition: height 0.3s ease, background-color 0.3s ease, transform 0.3s ease; /* Smooth transitions */
+    position: relative; /* Needed for potential transform animations */
+    flex-shrink: 0; /* Prevent bars from shrinking if container is too small */
+}
+
+/* Add a span inside the bar for the number */
+.bar-value {
+    position: absolute;
+    bottom: -20px; /* Position number below the bar */
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.9em;
+    color: #333;
+}
+
+/* --- Animation States --- */
+.bar.comparing {
+    background-color: var(--compare-color);
+}
+
+.bar.shifting {
+    background-color: var(--shift-color);
+    /* Optional: add a slight visual cue for movement */
+    /* transform: translateY(-10px); */
+}
+
+.bar.sorted {
+    background-color: var(--sorted-color);
+}
+
+#status {
+    margin-top: 15px;
+    text-align: center;
+    font-weight: bold;
+    min-height: 1.5em; /* Prevent layout shift */
+}
+
+#explanation {
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px dashed #ccc;
+    font-size: 0.9em;
+    color: #555;
+}
+
+#explanation ul {
+    list-style: none;
+    padding-left: 0;
+}
+
+#explanation li {
+    margin-bottom: 5px;
+}
+
+.legend-box {
+    display: inline-block;
+    width: 15px;
+    height: 15px;
+    margin-right: 8px;
+    vertical-align: middle;
+    border: 1px solid #ccc;
+}
