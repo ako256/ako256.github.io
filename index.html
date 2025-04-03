@@ -1,5 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html><html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,70 +8,80 @@
             font-family: Arial, sans-serif;
             text-align: center;
         }
-        .bar-container {
-            display: flex;
-            justify-content: center;
-            align-items: flex-end;
-            height: 300px;
+        .array-container {
+            font-size: 24px;
             margin-top: 20px;
         }
-        .bar {
-            width: 30px;
-            margin: 2px;
-            background-color: steelblue;
-            display: inline-block;
+        .highlight {
+            color: red;
+            font-weight: bold;
         }
         button {
             margin-top: 20px;
             padding: 10px;
             font-size: 16px;
         }
+        input {
+            padding: 5px;
+            font-size: 16px;
+        }
     </style>
 </head>
 <body>
     <h2>Insertion Sort Step by Step</h2>
-    <div class="bar-container" id="barContainer"></div>
+    <input type="text" id="inputArray" placeholder="Enter numbers separated by commas">
+    <button onclick="initializeArray()">Visualize</button>
+    <div class="array-container" id="arrayContainer"></div>
     <button onclick="insertionSort()">Start Sorting</button>
-    
-    <script>
-        let values = [50, 30, 70, 20, 90, 40, 10, 80];
-        const container = document.getElementById('barContainer');
+    <p>Current Value: <span id="currentValue">-</span></p>
+    <p>Comparisons:</p>
+    <pre id="comparisons"></pre><script>
+    let values = [];
+    const arrayContainer = document.getElementById('arrayContainer');
+    const currentValueElement = document.getElementById('currentValue');
+    const comparisonsElement = document.getElementById('comparisons');
 
-        function drawBars(arr) {
-            container.innerHTML = '';
-            arr.forEach(value => {
-                const bar = document.createElement('div');
-                bar.classList.add('bar');
-                bar.style.height = value + 'px';
-                container.appendChild(bar);
-            });
-        }
+    function initializeArray() {
+        const input = document.getElementById('inputArray').value;
+        values = input.split(',').map(num => parseInt(num.trim())).filter(num => !isNaN(num));
+        drawArray();
+    }
 
-        async function insertionSort() {
-            let bars = document.getElementsByClassName('bar');
-            for (let i = 1; i < values.length; i++) {
-                let key = values[i];
-                let j = i - 1;
-                bars[i].style.backgroundColor = 'red';
-                await sleep(500);
-                while (j >= 0 && values[j] > key) {
-                    values[j + 1] = values[j];
-                    bars[j + 1].style.height = values[j] + 'px';
-                    j--;
-                    await sleep(500);
-                }
-                values[j + 1] = key;
-                bars[j + 1].style.height = key + 'px';
-                bars[i].style.backgroundColor = 'steelblue';
+    function drawArray(highlightIndex = -1, movingIndex = -1) {
+        arrayContainer.innerHTML = values.map((value, index) => {
+            if (index === highlightIndex) {
+                return `<span class="highlight">${value}</span>`;
+            }
+            return value;
+        }).join(' | ');
+    }
+
+    async function insertionSort() {
+        comparisonsElement.innerText = '';
+        for (let i = 1; i < values.length; i++) {
+            let key = values[i];
+            let j = i - 1;
+            currentValueElement.innerText = key;
+            drawArray(i);
+            await sleep(500);
+            while (j >= 0 && values[j] > key) {
+                comparisonsElement.innerText += `Comparing ${key} with ${values[j]}\n`;
+                values[j + 1] = values[j];
+                drawArray(i, j);
+                j--;
                 await sleep(500);
             }
+            values[j + 1] = key;
+            drawArray(i);
+            await sleep(500);
         }
+        drawArray();
+    }
 
-        function sleep(ms) {
-            return new Promise(resolve => setTimeout(resolve, ms));
-        }
+    function sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+</script>
 
-        drawBars(values);
-    </script>
 </body>
 </html>
