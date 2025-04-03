@@ -1,7 +1,78 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Insertion Sort Visualization</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+        .bar-container {
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            height: 300px;
+            margin-top: 20px;
+        }
+        .bar {
+            width: 30px;
+            margin: 2px;
+            background-color: steelblue;
+            display: inline-block;
+        }
+        button {
+            margin-top: 20px;
+            padding: 10px;
+            font-size: 16px;
+        }
+    </style>
+</head>
 <body>
-<h1>Hello, World!</h1>
-<h4>Made by ash</h4>
+    <h2>Insertion Sort Step by Step</h2>
+    <div class="bar-container" id="barContainer"></div>
+    <button onclick="insertionSort()">Start Sorting</button>
+    
+    <script>
+        let values = [50, 30, 70, 20, 90, 40, 10, 80];
+        const container = document.getElementById('barContainer');
+
+        function drawBars(arr) {
+            container.innerHTML = '';
+            arr.forEach(value => {
+                const bar = document.createElement('div');
+                bar.classList.add('bar');
+                bar.style.height = value + 'px';
+                container.appendChild(bar);
+            });
+        }
+
+        async function insertionSort() {
+            let bars = document.getElementsByClassName('bar');
+            for (let i = 1; i < values.length; i++) {
+                let key = values[i];
+                let j = i - 1;
+                bars[i].style.backgroundColor = 'red';
+                await sleep(500);
+                while (j >= 0 && values[j] > key) {
+                    values[j + 1] = values[j];
+                    bars[j + 1].style.height = values[j] + 'px';
+                    j--;
+                    await sleep(500);
+                }
+                values[j + 1] = key;
+                bars[j + 1].style.height = key + 'px';
+                bars[i].style.backgroundColor = 'steelblue';
+                await sleep(500);
+            }
+        }
+
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        drawBars(values);
+    </script>
 </body>
 </html>
