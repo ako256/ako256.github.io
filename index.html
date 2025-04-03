@@ -1,87 +1,39 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Insertion Sort Visualization</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-        }
-        .array-container {
-            font-size: 24px;
-            margin-top: 20px;
-        }
-        .highlight {
-            color: red;
-            font-weight: bold;
-        }
-        button {
-            margin-top: 20px;
-            padding: 10px;
-            font-size: 16px;
-        }
-        input {
-            padding: 5px;
-            font-size: 16px;
-        }
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h2>Insertion Sort Step by Step</h2>
-    <input type="text" id="inputArray" placeholder="Enter numbers separated by commas">
-    <button onclick="initializeArray()">Visualize</button>
-    <div class="array-container" id="arrayContainer"></div>
-    <button onclick="insertionSort()">Start Sorting</button>
-    <p>Current Value: <span id="currentValue">-</span></p>
-    <p>Comparisons:</p>
-    <pre id="comparisons"></pre><script>
-    let values = [];
-    const arrayContainer = document.getElementById('arrayContainer');
-    const currentValueElement = document.getElementById('currentValue');
-    const comparisonsElement = document.getElementById('comparisons');
+    <h1>Insertion Sort Visualization</h1>
 
-    function initializeArray() {
-        const input = document.getElementById('inputArray').value;
-        values = input.split(',').map(num => parseInt(num.trim())).filter(num => !isNaN(num));
-        drawArray();
-    }
+    <div class="controls">
+        <label for="arrayInput">Enter numbers (comma-separated):</label>
+        <input type="text" id="arrayInput" placeholder="e.g., 5, 2, 8, 1, 9, 4">
+        <button id="sortButton">Sort!</button>
+        <label for="speedControl">Speed:</label>
+        <input type="range" id="speedControl" min="50" max="1000" value="300" step="50">
+        <span id="speedValue">300 ms</span>
+    </div>
 
-    function drawArray(highlightIndex = -1, movingIndex = -1) {
-        arrayContainer.innerHTML = values.map((value, index) => {
-            if (index === highlightIndex) {
-                return `<span class="highlight">${value}</span>`;
-            }
-            return value;
-        }).join(' | ');
-    }
+    <div id="visualizationContainer">
+        <div id="arrayContainer">
+            </div>
+        <div id="status">Enter numbers and click Sort.</div>
+        <div id="explanation">
+            <p><strong>Insertion Sort:</strong> It builds the final sorted array one item at a time. It iterates through the input array and for each element, it finds the correct position within the already sorted portion of the array and inserts it there. Elements greater than the current element are shifted one position to the right.</p>
+            <p><strong>Color Legend:</strong></p>
+            <ul>
+                <li><span class="legend-box" style="background-color: var(--bar-color);"></span> Default</li>
+                <li><span class="legend-box" style="background-color: var(--compare-color);"></span> Comparing / Key</li>
+                <li><span class="legend-box" style="background-color: var(--shift-color);"></span> Shifting</li>
+                <li><span class="legend-box" style="background-color: var(--sorted-color);"></span> Sorted Portion</li>
+            </ul>
+        </div>
+    </div>
 
-    async function insertionSort() {
-        comparisonsElement.innerText = '';
-        for (let i = 1; i < values.length; i++) {
-            let key = values[i];
-            let j = i - 1;
-            currentValueElement.innerText = key;
-            drawArray(i);
-            await sleep(500);
-            while (j >= 0 && values[j] > key) {
-                comparisonsElement.innerText += `Comparing ${key} with ${values[j]}\n`;
-                values[j + 1] = values[j];
-                drawArray(i, j);
-                j--;
-                await sleep(500);
-            }
-            values[j + 1] = key;
-            drawArray(i);
-            await sleep(500);
-        }
-        drawArray();
-    }
-
-    function sleep(ms) {
-        return new Promise(resolve => setTimeout(resolve, ms));
-    }
-</script>
-
+    <script src="script.js"></script>
 </body>
 </html>
