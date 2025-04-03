@@ -5,6 +5,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const statusDiv = document.getElementById('status');
     const speedControl = document.getElementById('speedControl');
     const speedValueSpan = document.getElementById('speedValue');
+    // *** MODIFICATION: Get reference to step log list ***
+    const stepLogList = document.getElementById('stepLogList');
+    // *** END MODIFICATION ***
 
     let animationSpeed = parseInt(speedControl.value); // Milliseconds per step
     let bars = []; // To store references to the bar elements
@@ -20,18 +23,22 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        // Parse input string into an array of numbers
         const numbers = inputText.split(',')
             .map(numStr => parseInt(numStr.trim()))
-            .filter(num => !isNaN(num)); // Filter out non-numeric values
+            .filter(num => !isNaN(num));
 
         if (numbers.length === 0) {
              updateStatus("No valid numbers entered.", "error");
             return;
         }
-        if (numbers.length > 50) { // Optional limit for performance/display
+        if (numbers.length > 50) {
             updateStatus("Warning: Visualizing large arrays may be slow.", "warning");
         }
+
+        // *** MODIFICATION: Clear previous log ***
+        stepLogList.innerHTML = '';
+        logStep('--- Starting Sort ---');
+        // *** END MODIFICATION ***
 
         isSorting = true;
         sortButton.disabled = true;
@@ -40,7 +47,7 @@ document.addEventListener('DOMContentLoaded', () => {
         updateStatus("Starting Insertion Sort...");
 
         generateBars(numbers);
-        insertionSort(numbers); // Start the async sorting process
+        insertionSort(numbers);
     });
 
     speedControl.addEventListener('input', () => {
@@ -48,7 +55,6 @@ document.addEventListener('DOMContentLoaded', () => {
         speedValueSpan.textContent = `${animationSpeed} ms`;
     });
 
-    // Initialize speed display
     speedValueSpan.textContent = `${animationSpeed} ms`;
 
 
@@ -60,141 +66,192 @@ document.addEventListener('DOMContentLoaded', () => {
         statusDiv.style.color = type === "error" ? "red" : type === "warning" ? "orange" : "black";
     }
 
-    // Sleep function to pause execution for animation
+    // Sleep function
     function sleep() {
         return new Promise(resolve => setTimeout(resolve, animationSpeed));
     }
 
-    // Generate visual bars from the array
+    // *** MODIFICATION: Function to add step to the log ***
+    function logStep(message) {
+        const li = document.createElement('li');
+        li.textContent = message;
+        stepLogList.appendChild(li);
+        // Optional: Auto-scroll to the bottom
+        stepLogList.parentElement.scrollTop = stepLogList.parentElement.scrollHeight;
+    }
+    // *** END MODIFICATION ***
+
+    // Generate visual bars
     function generateBars(arr) {
-        arrayContainer.innerHTML = ''; // Clear previous bars
-        bars = []; // Reset bar references
-        const maxValue = Math.max(...arr, 1); // Avoid division by zero if all are 0 or array is empty
+        arrayContainer.innerHTML = '';
+        bars = [];
+        // Handle empty array case for maxValue calculation
+        const maxValue = arr.length > 0 ? Math.max(...arr) : 1;
+        const safeMaxValue = maxValue === 0 ? 1 : maxValue; // Ensure maxValue is not 0
+
         const containerWidth = arrayContainer.offsetWidth;
-        // Calculate bar width based on container size and number of elements
+        const containerHeight = arrayContainer.offsetHeight;
+        // Calculate bar width (consider padding of container)
         const totalGapWidth = (arr.length + 1) * parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--bar-gap').replace('px', '')) * 2;
-        const availableWidth = containerWidth - totalGapWidth - 20; // Subtract padding
-        const barWidth = Math.max(5, Math.floor(availableWidth / arr.length)); // Ensure minimum width
+        const containerPadding = parseFloat(getComputedStyle(arrayContainer).paddingLeft) + parseFloat(getComputedStyle(arrayContainer).paddingRight);
+        const availableWidth = containerWidth - totalGapWidth - containerPadding;
+        const barWidth = Math.max(5, Math.floor(availableWidth / Math.max(1, arr.length))); // Avoid division by zero
+
+        // Calculate available height (consider padding)
+        const containerPaddingBottom = parseFloat(getComputedStyle(arrayContainer).paddingBottom);
+        const containerPaddingTop = parseFloat(getComputedStyle(arrayContainer).paddingTop);
+        const availableHeight = containerHeight - containerPaddingBottom - containerPaddingTop - 5; // Minus 5 for safety margin
 
 
         arr.forEach((value, index) => {
             const bar = document.createElement('div');
             bar.classList.add('bar');
-            // Scale height relative to the max value and container height
-            const barHeight = Math.max(5, (value / maxValue) * (arrayContainer.offsetHeight - 30)); // Subtract padding, ensure min height
+            // Scale height relative to the max value and available height
+             const barHeightPercentage = (value / safeMaxValue);
+             // Ensure barHeight is at least a minimum value (e.g., 2px) even for 0 values, but allow 0 height if value is 0.
+             const barHeight = value === 0 ? 0 : Math.max(2, barHeightPercentage * availableHeight);
+
             bar.style.height = `${barHeight}px`;
             bar.style.width = `${barWidth}px`;
 
-             // Add value label below the bar
             const valueSpan = document.createElement('span');
             valueSpan.classList.add('bar-value');
             valueSpan.textContent = value;
             bar.appendChild(valueSpan);
 
-            // Store reference and value for easier manipulation
-            bar.dataset.value = value; // Store original value if needed
+            bar.dataset.value = value;
 
             arrayContainer.appendChild(bar);
-            bars.push(bar); // Store the DOM element reference
+            bars.push(bar);
         });
     }
 
-    // --- Insertion Sort Algorithm with Visualization ---
+    // --- Insertion Sort Algorithm with Visualization and Logging ---
     async function insertionSort(arr) {
         const n = arr.length;
         if (n <= 1) {
-            if (n === 1) bars[0].classList.add('sorted'); // Mark single element as sorted
+            if (n === 1) {
+                bars[0].classList.add('sorted');
+                logStep(`Array has only one element (${arr[0]}), already sorted.`);
+            } else {
+                 logStep("Array is empty, nothing to sort.");
+            }
             finishSort();
             return;
         }
 
-        bars[0].classList.add('sorted'); // First element is trivially sorted
+        logStep(`Element at index 0 (${arr[0]}) is considered sorted.`);
+        bars[0].classList.add('sorted');
 
         for (let i = 1; i < n; i++) {
             let key = arr[i];
             let keyBar = bars[i];
             let j = i - 1;
 
-            updateStatus(`Selecting element ${key} at index ${i} as key.`);
+            const statusMsgKey = `Selecting element ${key} (index ${i}) as the key.`;
+            updateStatus(statusMsgKey);
+            logStep(statusMsgKey);
             keyBar.classList.add('comparing'); // Highlight the key element
             await sleep();
 
-            // Find the correct position for the key in the sorted subarray arr[0...i-1]
+            // Find the correct position
             while (j >= 0 && arr[j] > key) {
-                updateStatus(`Comparing key ${key} with ${arr[j]} at index ${j}. ${arr[j]} > ${key}, shifting ${arr[j]} right.`);
+                const statusMsgCompare = `Comparing key ${key} with ${arr[j]} (index ${j}).`;
+                 const statusMsgShift = `${arr[j]} > ${key}, so shift ${arr[j]} from index ${j} to ${j+1}.`;
+                 updateStatus(`${statusMsgCompare} ${statusMsgShift}`);
+                 logStep(statusMsgCompare);
+                 logStep(statusMsgShift);
 
-                // Highlight element being compared
                 bars[j].classList.add('comparing');
-                // Highlight element being shifted (the one at j that will move to j+1)
                 bars[j].classList.add('shifting');
-                // Also highlight the spot it's moving to (j+1, currently holding key visually)
                 bars[j+1].classList.add('shifting');
-
                 await sleep();
 
-                // --- Animate the shift ---
-                // 1. Visually move bar[j] to position j+1
-                // We achieve this by making bar[j+1] look like bar[j]
-                 updateBar(bars[j+1], arr[j]); // Update height and value display
-                 arr[j + 1] = arr[j]; // Update the underlying array *after* visual step
+                // Animate shift
+                updateBar(bars[j+1], arr[j]);
+                arr[j + 1] = arr[j];
 
-                // 2. Reset colors (except for sorted part and the key which is still 'held')
                 bars[j].classList.remove('comparing', 'shifting');
-                bars[j+1].classList.remove('shifting'); // Keep j+1 highlighted until key is placed
-                bars[j].classList.add('sorted'); // The element at j is now part of the sorted segment relative to this shift
+                bars[j+1].classList.remove('shifting');
+                bars[j].classList.add('sorted'); // This element relative to the shift is sorted now
 
-                j--; // Move to the next element on the left
+                j--;
 
-                // If j is now < 0, the key goes to the start, otherwise prepare for next comparison
                 if (j >= 0) {
-                     updateStatus(`Moving comparison to index ${j}.`);
-                     bars[j].classList.add('comparing'); // Highlight next comparison target
+                     const statusMsgNextCompare = `Moving comparison to index ${j} (${arr[j]}).`;
+                     updateStatus(statusMsgNextCompare);
+                     // logStep(statusMsgNextCompare); // Logging this might be too verbose, log comparison in next loop iter
+                     bars[j].classList.add('comparing');
                 } else {
-                     updateStatus(`Key ${key} needs to be inserted at index 0.`);
+                     const statusMsgInsertStart = `Reached start of sorted section. Key ${key} will be inserted at index 0.`;
+                     updateStatus(statusMsgInsertStart);
+                     logStep(statusMsgInsertStart);
                 }
                  await sleep();
-                 if (j>=0) bars[j].classList.remove('comparing'); // Clean up comparison highlight before next loop iteration or insertion
+                 if (j>=0) bars[j].classList.remove('comparing');
             }
 
-             // Place the key in its correct position (j + 1)
-            updateStatus(`Inserting key ${key} at index ${j + 1}.`);
-             arr[j + 1] = key;
-             // Update the visual bar at the insertion point
-             updateBar(bars[j+1], key);
-             bars[j+1].classList.add('sorted'); // Mark the inserted element as sorted
-             bars[j+1].classList.remove('comparing'); // Ensure key highlight is removed
+             // Log comparison result if the loop condition (arr[j] > key) failed
+             if (j >= 0) {
+                 const logMsgCompareEnd = `Comparing key ${key} with ${arr[j]} (index ${j}). Condition (${arr[j]} > ${key}) is false.`;
+                 logStep(logMsgCompareEnd);
+                 // Momentarily highlight for clarity
+                 bars[j].classList.add('comparing');
+                 await sleep();
+                 bars[j].classList.remove('comparing');
+             }
 
 
-            // Clean up any lingering comparison highlights from the loop exit
-             if (j >= 0) bars[j].classList.remove('comparing');
-             keyBar.classList.remove('comparing'); // Remove key highlight (it might be the same bar as bars[j+1])
+             // Place the key
+             const insertionIndex = j + 1;
+             const statusMsgInsert = `Inserting key ${key} at index ${insertionIndex}.`;
+             updateStatus(statusMsgInsert);
+             logStep(statusMsgInsert);
+
+             arr[insertionIndex] = key;
+             updateBar(bars[insertionIndex], key); // Update the visual bar
+             bars[insertionIndex].classList.add('sorted');
+             bars[insertionIndex].classList.remove('comparing'); // Clean up just in case
+
+             keyBar.classList.remove('comparing'); // Remove highlight from original key position if different
 
              // Mark all bars up to i as sorted visually
              for (let k = 0; k <= i; k++) {
                  bars[k].classList.add('sorted');
-                 bars[k].classList.remove('comparing', 'shifting'); // Cleanup any stray states
+                 bars[k].classList.remove('comparing', 'shifting');
              }
+             logStep(`Elements up to index ${i} are now sorted.`);
              await sleep();
         }
 
         finishSort();
     }
 
-     // Helper to update a bar's visual appearance (height and value text)
-     function updateBar(barElement, newValue) {
-         const maxValue = Math.max(...bars.map(b => parseInt(b.dataset.value)), 1); // Recalculate max based on current values if needed, or use original max
-         const barHeight = Math.max(5, (newValue / maxValue) * (arrayContainer.offsetHeight - 30));
+    // Helper to update bar visuals
+    function updateBar(barElement, newValue) {
+         const allValues = bars.map(b => parseInt(b.dataset.value || 0));
+         const maxValue = allValues.length > 0 ? Math.max(...allValues) : 1;
+         const safeMaxValue = maxValue === 0 ? 1 : maxValue;
+
+         const containerHeight = arrayContainer.offsetHeight;
+         const containerPaddingBottom = parseFloat(getComputedStyle(arrayContainer).paddingBottom);
+         const containerPaddingTop = parseFloat(getComputedStyle(arrayContainer).paddingTop);
+         const availableHeight = containerHeight - containerPaddingBottom - containerPaddingTop - 5;
+
+         const barHeightPercentage = (newValue / safeMaxValue);
+         const barHeight = newValue === 0 ? 0 : Math.max(2, barHeightPercentage * availableHeight);
+
          barElement.style.height = `${barHeight}px`;
-         barElement.dataset.value = newValue; // Update stored value if you rely on it
+         barElement.dataset.value = newValue;
 
          const valueSpan = barElement.querySelector('.bar-value');
          if (valueSpan) {
              valueSpan.textContent = newValue;
-         } else { // If somehow span was lost, recreate it (robustness)
+         } else {
              const newValueSpan = document.createElement('span');
              newValueSpan.classList.add('bar-value');
              newValueSpan.textContent = newValue;
-             barElement.innerHTML = ''; // Clear potential old text node
+             barElement.innerHTML = '';
              barElement.appendChild(newValueSpan);
          }
      }
@@ -202,8 +259,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Called when sorting finishes
     function finishSort() {
-        updateStatus("Sorting Complete!", "success");
-        // Ensure all bars are marked as sorted and remove other states
+        const finalMsg = "Sorting Complete!";
+        updateStatus(finalMsg, "success");
+        logStep(`--- ${finalMsg} ---`);
         bars.forEach(bar => {
              bar.classList.remove('comparing', 'shifting');
              bar.classList.add('sorted');
@@ -212,5 +270,16 @@ document.addEventListener('DOMContentLoaded', () => {
         sortButton.disabled = false;
         arrayInput.disabled = false;
         speedControl.disabled = false;
+    }
+
+    // Initial generation if there's a default value
+    if (arrayInput.value) {
+        const initialNumbers = arrayInput.value.trim().split(',')
+            .map(numStr => parseInt(numStr.trim()))
+            .filter(num => !isNaN(num));
+        if (initialNumbers.length > 0) {
+            generateBars(initialNumbers);
+            updateStatus("Enter numbers or click Sort with the current example.");
+        }
     }
 });
