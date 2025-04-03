@@ -15,7 +15,7 @@ body {
     color: #333;
 }
 
-h1 {
+h1, h2 {
     text-align: center;
     color: #444;
 }
@@ -78,20 +78,25 @@ h1 {
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    display: flex; /* Use flexbox for layout */
+    flex-direction: column; /* Stack children vertically */
 }
 
 #arrayContainer {
     display: flex;
-    /* justify-content: center; */ /* Use space-around or space-between for better spacing if needed */
     align-items: flex-end; /* Align bars at the bottom */
     height: 350px; /* Adjust height as needed */
     border: 1px solid #ddd;
     background-color: #f9f9f9;
     padding: 10px;
+    /* *** MODIFICATION: Added padding-bottom for number labels *** */
+    padding-bottom: 30px; /* Make space below bars */
+    /* *** END MODIFICATION *** */
     position: relative; /* Needed for absolute positioning of bars if used for swap animation */
     overflow-x: auto; /* Add scroll if too many bars */
     overflow-y: hidden;
     min-height: 100px; /* Ensure container has some height even when empty */
+    margin-bottom: 15px; /* Add space between array and status */
 }
 
 .bar {
@@ -99,7 +104,6 @@ h1 {
     flex-direction: column;
     justify-content: flex-end; /* Number at the bottom */
     align-items: center;
-    /* width: var(--bar-width); */ /* Width is now set dynamically */
     margin: 0 var(--bar-gap);
     background-color: var(--bar-color);
     text-align: center;
@@ -112,14 +116,16 @@ h1 {
     flex-shrink: 0; /* Prevent bars from shrinking if container is too small */
 }
 
-/* Add a span inside the bar for the number */
 .bar-value {
     position: absolute;
+    /* *** MODIFICATION: Adjust position slightly if needed *** */
     bottom: -20px; /* Position number below the bar */
+    /* *** END MODIFICATION *** */
     left: 50%;
     transform: translateX(-50%);
     font-size: 0.9em;
     color: #333;
+    white-space: nowrap; /* Prevent number wrapping */
 }
 
 /* --- Animation States --- */
@@ -129,8 +135,6 @@ h1 {
 
 .bar.shifting {
     background-color: var(--shift-color);
-    /* Optional: add a slight visual cue for movement */
-    /* transform: translateY(-10px); */
 }
 
 .bar.sorted {
@@ -138,18 +142,20 @@ h1 {
 }
 
 #status {
-    margin-top: 15px;
+    /* margin-top: 15px; */ /* Removed margin-top, use container gap */
     text-align: center;
     font-weight: bold;
     min-height: 1.5em; /* Prevent layout shift */
+    margin-bottom: 15px;
 }
 
 #explanation {
-    margin-top: 20px;
+    /* margin-top: 20px; */ /* Removed margin-top, use container gap */
     padding-top: 15px;
     border-top: 1px dashed #ccc;
     font-size: 0.9em;
     color: #555;
+    margin-bottom: 20px;
 }
 
 #explanation ul {
@@ -169,3 +175,39 @@ h1 {
     vertical-align: middle;
     border: 1px solid #ccc;
 }
+
+/* --- Added Styles for Step Log --- */
+#stepLogContainer {
+    margin-top: 20px;
+    padding: 15px;
+    border: 1px solid #e0e0e0;
+    border-radius: 5px;
+    background-color: #fdfdfd;
+    max-height: 300px; /* Limit height and make scrollable */
+    overflow-y: auto; /* Add scrollbar if content exceeds max-height */
+}
+
+#stepLogContainer h2 {
+    margin-top: 0;
+    margin-bottom: 10px;
+    font-size: 1.2em;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 5px;
+}
+
+#stepLogList {
+    padding-left: 25px; /* Indent list items */
+    margin: 0;
+    font-size: 0.85em;
+    color: #444;
+}
+
+#stepLogList li {
+    margin-bottom: 5px;
+    padding: 2px 0;
+}
+
+#stepLogList li:nth-child(even) {
+    background-color: #f9f9f9; /* Subtle striping */
+}
+/* --- End Added Styles --- */

@@ -11,8 +11,7 @@
 
     <div class="controls">
         <label for="arrayInput">Enter numbers (comma-separated):</label>
-        <input type="text" id="arrayInput" placeholder="e.g., 5, 2, 8, 1, 9, 4">
-        <button id="sortButton">Sort!</button>
+        <input type="text" id="arrayInput" placeholder="e.g., 5, 2, 8, 1, 9, 4" value="5,2,8,1,9,4"> <button id="sortButton">Sort!</button>
         <label for="speedControl">Speed:</label>
         <input type="range" id="speedControl" min="50" max="1000" value="300" step="50">
         <span id="speedValue">300 ms</span>
@@ -32,7 +31,12 @@
                 <li><span class="legend-box" style="background-color: var(--sorted-color);"></span> Sorted Portion</li>
             </ul>
         </div>
-    </div>
+        <div id="stepLogContainer">
+             <h2>Sorting Steps Log</h2>
+             <ol id="stepLogList"></ol>
+        </div>
+        </div>
+
 
     <script src="script.js"></script>
 </body>
