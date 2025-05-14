@@ -3,41 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Insertion Sort Visualization</title>
+    <title>Coming Soon</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h1>Insertion Sort Visualization</h1>
-
-    <div class="controls">
-        <label for="arrayInput">Enter numbers (comma-separated):</label>
-        <input type="text" id="arrayInput" placeholder="e.g., 5, 2, 8, 1, 9, 4" value="5,2,8,1,9,4"> <button id="sortButton">Sort!</button>
-        <label for="speedControl">Speed:</label>
-        <input type="range" id="speedControl" min="50" max="1000" value="300" step="50">
-        <span id="speedValue">300 ms</span>
+    <div class="content">
+        <div class="name">your name here</div>
+        <div class="coming-soon">
+            coming soon<span class="dots"><span>.</span><span>.</span><span>.</span></span>
+        </div>
     </div>
-
-    <div id="visualizationContainer">
-        <div id="arrayContainer">
-            </div>
-        <div id="status">Enter numbers and click Sort.</div>
-        <div id="explanation">
-            <p><strong>Insertion Sort:</strong> It builds the final sorted array one item at a time. It iterates through the input array and for each element, it finds the correct position within the already sorted portion of the array and inserts it there. Elements greater than the current element are shifted one position to the right.</p>
-            <p><strong>Color Legend:</strong></p>
-            <ul>
-                <li><span class="legend-box" style="background-color: var(--bar-color);"></span> Default</li>
-                <li><span class="legend-box" style="background-color: var(--compare-color);"></span> Comparing / Key</li>
-                <li><span class="legend-box" style="background-color: var(--shift-color);"></span> Shifting</li>
-                <li><span class="legend-box" style="background-color: var(--sorted-color);"></span> Sorted Portion</li>
-            </ul>
-        </div>
-        <div id="stepLogContainer">
-             <h2>Sorting Steps Log</h2>
-             <ol id="stepLogList"></ol>
-        </div>
-        </div>
-
-
-    <script src="script.js"></script>
 </body>
 </html>
