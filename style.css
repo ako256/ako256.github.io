@@ -1,13 +1,11 @@
-/* styles.css */
-
 body {
     margin: 0;
     padding: 0;
-    font-family: 'monospace', monospace; /* Use monospace font */
-    background-color: #000; /* Black background */
-    color: #fff; /* White text */
+    font-family: 'monospace', monospace;
+    background-color: #000;
+    color: #fff;
     display: flex;
-    flex-direction: column; /* Stack elements vertically */
+    flex-direction: column;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
@@ -16,7 +14,7 @@ body {
 
 .center-container {
     text-align: center;
-    margin-bottom: 30px; /* Add space between text and buttons */
+    margin-bottom: 30px;
 }
 
 .name {
@@ -34,79 +32,72 @@ body {
 .dots-container {
     display: flex;
     align-items: center;
-    margin-left: 5px; /* Space between "coming soon" text and dots */
+    margin-left: 5px;
 }
 
 .dot {
-    width: 0.3em; /* Smaller size of the dot */
-    height: 0.3em; /* Smaller size of the dot */
-    background-color: #fff; /* White dot color */
-    border-radius: 50%; /* Make it a circle */
-    margin: 0 0.1em; /* Smaller space between dots */
-    opacity: 0; /* Start invisible */
-    animation: fade 1.5s infinite ease-in-out; /* Apply fade animation */
+    width: 0.3em;
+    height: 0.3em;
+    background-color: #fff;
+    border-radius: 50%;
+    margin: 0 0.1em;
+    opacity: 0;
+    animation: fade 1.5s infinite ease-in-out;
 }
 
-/* Stagger the animation delay for each dot */
+
 .dot:nth-child(1) {
     animation-delay: 0s;
 }
 
 .dot:nth-child(2) {
-    animation-delay: 0.5s; /* Second dot starts halfway through first dot's animation */
+    animation-delay: 0.5s;
 }
 
 .dot:nth-child(3) {
-    animation-delay: 1s; /* Third dot starts after the first dot finishes its initial fade */
+    animation-delay: 1s;
 }
 
 @keyframes fade {
     0%, 100% {
-        opacity: 0; /* Fade out */
+        opacity: 0;
     }
     50% {
-        opacity: 1; /* Fade in */
+        opacity: 1;
     }
 }
 
 .button-container {
     display: flex;
-    gap: 20px; /* Space between buttons */
+    gap: 20px;
 }
 
 .social-button {
     padding: 10px 20px;
-    border: 2px solid #fff; /* White outline */
-    border-radius: 50px; /* Capsule shape */
-    background-color: #000; /* Black background */
-    color: #fff; /* White text */
-    text-decoration: none; /* Remove underline from links */
+    border: 2px solid #fff;
+    border-radius: 50px;
+    background-color: #000;
+    color: #fff;
+    text-decoration: none;
     font-size: 1em;
-    transition: background-color 0.3s ease, color 0.3s ease; /* Smooth transition for hover effect */
+    transition: background-color 0.3s ease, color 0.3s ease;
     cursor: pointer;
-    /* text-align: center; - Removed from here to center within the button container */
 }
 
 .social-button:hover {
-    background-color: #fff; /* White background on hover */
-    color: #000; /* Black text on hover */
+    background-color: #fff;
+    color: #000;
 }
 
-/* Media query for smaller screens */
 @media (max-width: 768px) {
     .button-container {
-        flex-direction: column; /* Stack buttons vertically */
-        gap: 10px; /* Adjust vertical space between buttons on smaller screens */
-        /* Removed width and max-width to allow buttons to size based on content */
-        /* width: 80%; */
-        /* max-width: 300px; */
-        align-items: center; /* Center buttons horizontally when stacked */
+        flex-direction: column;
+        gap: 10px;
+        align-items: center;
     }
 
     .social-button {
-        /* Removed width: 100%; to allow buttons to size based on content */
-        /* width: 100%; */
-        box-sizing: border-box; /* Include padding and border in the element's total width */
-        text-align: center; /* Center text within each button */
+        box-sizing: border-box;
+        text-align: center;
     }
 }
