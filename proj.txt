@@ -1,0 +1,519 @@
+/*
+================================================================================
+|                                                                              |
+|               FULL-STACK MERN & NODE.JS CHEAT SHEET FRAMEWORK                |
+|                                                                              |
+| This file contains the code for:                                             |
+| 1. THREE separate React Frontend examples (1A, 1B, 1C)                       |
+| 2. The Node.js/Mongoose API Server (server-api)                              |
+| 3. The Node.js File Server         (server-files)                            |
+|                                                                              |
+| You will copy/paste these sections into their correct projects.              |
+|                                                                              |
+================================================================================
+*/
+Example A (Counter):
+
+FILE 1A (React Frontend)
+
+Example B (Database):
+
+FILE 1B (React Frontend)
+
+FILE 2 (Node.js API Backend)
+
+Example C (File Server):
+
+FILE 1C (React Frontend)
+
+FILE 3 (Node.js File Backend)
+/*
+================================================================================
+|                                                                              |
+|             PART 0: SETUP COMMANDS (RUN THESE *TODAY*)                       |
+|                                                                              |
+================================================================================
+
+// --- 1. Start MongoDB Server ---
+// (If you installed MongoDB Community Server locally)
+// Open a new terminal and run:
+mongod
+
+
+// --- 2. Create the React Frontend Project ---
+// Open a new terminal:
+npx create-react-app client
+
+// --- 3. Create the Node.js API (Database) Backend ---
+// Open a new terminal:
+mkdir server-api
+cd server-api
+npm init -y
+npm install express mongoose cors
+
+// --- 4. Create the Node.js File Server Backend ---
+// Open a new terminal:
+mkdir server-files
+cd server-files
+npm init -y
+npm install express cors
+mkdir managed_files  // <-- IMPORTANT: Create directory for files
+
+
+// --- 5. HOW TO RUN TOMORROW ---
+// You will need UP TO FOUR terminals open:
+// Terminal 1: mongod (MongoDB server, if running locally)
+// Terminal 2: cd client         && npm start  (Runs React on port 3000)
+// Terminal 3: cd server-api     && node server.js (Runs API server on port 5000)
+// Terminal 4: cd server-files   && node server.js (Runs File server on port 5001)
+
+*/
+
+/*
+================================================================================
+|                                                                              |
+|       REACT FRONTEND SETUP:                                                  |
+|       LOCATION: client/src/App.js                                            |
+|                                                                              |
+================================================================================
+SETUP STEPS:
+1. Run `npx create-react-app client` (if not done).
+2. Delete all code in `client/src/App.js`.
+3. Choose *ONE* of the examples below (FILE 1A, 1B, OR 1C).
+4. Copy/Paste its code into the empty `client/src/App.js`.
+5. Run `npm start` from inside the `client` folder.
+*/
+
+/*
+================================================================================
+|                                                                              |
+|           FILE 1A: REACT FRONTEND (Example A: Counter Button)                |
+|           (This is a standalone React-only example)                          |
+|                                                                              |
+================================================================================
+*/
+import React, { useState } from 'react';
+// import './App.css';
+
+/*
+==============================================================================
+| EXAMPLE A: Counter Button                                                  |
+| (Exp 1: Basic React Design, Exp 2: React Hooks)                            |
+==============================================================================
+*/
+function App() {
+  // (Exp 2) 'useState' hook to store the count
+  const [count, setCount] = useState(0);
+
+  const increment = () => {
+    setCount(prevCount => prevCount + 1);
+  };
+
+  // (Exp 1) Basic JSX rendering
+  return (
+    <div style={{ padding: '20px', fontFamily: 'sans-serif' }}>
+      <h1>My Full-Stack Cheat Sheet</h1>
+      <div style={{ border: '1px solid blue', padding: '10px', margin: '10px 0' }}>
+        <h2>Example A: Counter</h2>
+        <p>Current Count: {count}</p>
+        <button onClick={increment}>Click to Increment</button>
+      </div>
+    </div>
+  );
+}
+
+export default App;
+
+
+/*
+================================================================================
+|                                                                              |
+|           FILE 1B: REACT FRONTEND (Example B: Database CRUD)                 |
+|           (Connects to FILE 2: server-api on port 5000)                      |
+|                                                                              |
+================================================================================
+*/
+import React, { useState, useEffect } from 'react';
+// import './App.css';
+
+/*
+==============================================================================
+| EXAMPLE B: Database CRUD (Create, Read, Delete)                            |
+| (Exp 1, 2, 3, 4, 7, 8)                                                     |
+==============================================================================
+*/
+function App() {
+  // (Exp 2) Hooks for list of items and the input field
+  const [items, setItems] = useState([]);
+  const [text, setText] = useState('');
+  const [error, setError] = useState('');
+
+  // (Exp 4) API Integration: Fetch items on load
+  useEffect(() => {
+    fetchItems();
+  }, []); // Empty array = run once on load
+
+  // (Exp 8) GET Request to our API server
+  const fetchItems = () => {
+    fetch('http://localhost:5000/api/items') // <-- API Server (Port 5000)
+      .then(res => res.json())
+      .then(data => setItems(data))
+      .catch(err => console.error("Error fetching items:", err));
+  };
+
+  // (Exp 3) Form Handling & Validation
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (text.trim() === '') {
+      setError('Item cannot be empty');
+      return;
+    }
+    setError('');
+
+    // (Exp 8) POST Request to create item
+    fetch('http://localhost:5000/api/items', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name: text })
+    })
+    .then(res => res.json())
+    .then(newItem => {
+      setItems([...items, newItem]); // Add to list
+      setText(''); // Clear input
+    })
+    .catch(err => console.error("Error creating item:", err));
+  };
+
+  // (Exp 8) DELETE Request to delete item
+  const handleDeleteItem = (id) => {
+    fetch(`http://localhost:5000/api/items/${id}`, {
+      method: 'DELETE'
+    })
+    .then(res => res.json())
+    .then(() => {
+      // Update state by filtering out the deleted item
+      setItems(items.filter(item => item._id !== id));
+    })
+    .catch(err => console.error("Error deleting item:", err));
+  };
+
+  // (Exp 1) Basic JSX Design for the form and list
+  return (
+    <div style={{ padding: '20px', fontFamily: 'sans-serif' }}>
+      <h1>My Full-Stack Cheat Sheet</h1>
+      <div style={{ border: '1px solid green', padding: '10px', margin: '10px 0' }}>
+        <h2>Example B: Database CRUD (with MongoDB)</h2>
+        {error && <p style={{ color: 'red' }}>{error}</p>}
+        <form onSubmit={handleSubmit}>
+          <input
+            type="text"
+            placeholder="New item name"
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+          />
+          <button type="submit">Add Item</button>
+        </form>
+        <h4>Item List:</h4>
+        <ul>
+          {items.map(item => (
+            <li key={item._id}>
+              {item.name}
+              <button 
+                onClick={() => handleDeleteItem(item._id)} 
+                style={{ marginLeft: '10px' }}
+              >
+                Delete
+              </button>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  );
+}
+
+export default App;
+
+
+/*
+================================================================================
+|                                                                              |
+|           FILE 1C: REACT FRONTEND (Example C: File Server)                   |
+|           (Connects to FILE 3: server-files on port 5001)                    |
+|                                                                              |
+================================================================================
+*/
+import React, { useState, useEffect } from 'react';
+// import './App.css';
+
+/*
+==============================================================================
+| EXAMPLE C: Node.js File Server (List, Create, Delete)                      |
+| (Exp 1, 2, 3, 4, 5, 6)                                                     |
+==============================================================================
+*/
+function App() {
+  // (Exp 2) Hooks for file list and new filename input
+  const [files, setFiles] = useState([]);
+  const [filename, setFilename] = useState('');
+  
+  // (Exp 4) API Integration: Fetch files on load
+  useEffect(() => {
+    fetchFiles();
+  }, []);
+
+  // (Exp 4, 5, 6) GET Request to our FILE server
+  const fetchFiles = () => {
+    fetch('http://localhost:5001/files') // <-- FILE Server (Port 5001)
+      .then(res => res.json())
+      .then(data => setFiles(data))
+      .catch(err => console.error("Error fetching files:", err));
+  };
+
+  // (Exp 3) Form Handling
+  const handleCreateFile = (e) => {
+    e.preventDefault();
+    if (filename.trim() === '') return;
+
+    // (Exp 4, 5, 6) POST Request to create a file
+    fetch('http://localhost:5001/createfile', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ filename: filename })
+    })
+    .then(res => res.json())
+    .then(() => {
+      fetchFiles(); // Refresh the list
+      setFilename(''); // Clear input
+    })
+    .catch(err => console.error("Error creating file:", err));
+  };
+
+  // (Exp 4, 5, 6) DELETE Request to delete a file
+  const handleDeleteFile = (file) => {
+    fetch(`http://localhost:5001/file/${file}`, {
+      method: 'DELETE'
+    })
+    .then(res => res.json())
+    .then(() => {
+      fetchFiles(); // Refresh the list
+    })
+    .catch(err => console.error("Error deleting file:", err));
+  };
+
+  // (Exp 1) Basic JSX Design
+  return (
+    <div style={{ padding: '20px', fontFamily: 'sans-serif' }}>
+      <h1>My Full-Stack Cheat Sheet</h1>
+      <div style={{ border: '1px solid purple', padding: '10px', margin: '10px 0' }}>
+        <h2>Example C: Node.js File Server</h2>
+        <form onSubmit={handleCreateFile}>
+          <input
+            type="text"
+            placeholder="newfile.txt"
+            value={filename}
+            onChange={(e) => setFilename(e.target.value)}
+          />
+          <button type="submit">Create .txt File</button>
+        </form>
+        <h4>Files in Directory:</h4>
+        <ul>
+          {files.map(file => (
+            <li key={file}>
+              {file}
+              <button 
+                onClick={() => handleDeleteFile(file)} 
+                style={{ marginLeft: '10px' }}
+              >
+                Delete
+              </button>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  );
+}
+
+export default App;
+
+
+/*
+================================================================================
+|                                                                              |
+|           FILE 2: NODE.JS API SERVER (Database CRUD)                         |
+|           LOCATION: server-api/server.js                                     |
+|           (This is the backend for React Example 1B)                         |
+|                                                                              |
+================================================================================
+SETUP STEPS:
+1. Create folder `server-api`.
+2. Inside `server-api`, run `npm init -y`.
+3. Run `npm install express mongoose cors`.
+4. Create file `server-api/server.js`.
+5. Copy/Paste ALL code from this section (FILE 2) into it.
+6. Run `node server.js` from inside the `server-api` folder.
+7. Make sure `mongod` is running in another terminal.
+*/
+
+// (Exp 5) Import libraries
+const express = require('express');
+const mongoose = require('mongoose');
+const cors = require('cors');
+
+// (Exp 5) Setup app
+const app = express();
+const PORT = 5000; // API Server runs on 5000
+
+// --- Middleware ---
+app.use(cors()); // Allow React to make requests
+app.use(express.json()); // Parse JSON bodies
+
+/*
+==============================================================================
+| Exp 7: Database Integration (MongoDB)                                      |
+==============================================================================
+*/
+// 1. Connect to local MongoDB
+mongoose.connect('mongodb://localhost:27017/mycruddb')
+  .then(() => console.log('API Server: MongoDB connected.'))
+  .catch(err => console.error(err));
+
+// 2. Define Schema
+const ItemSchema = new mongoose.Schema({
+  name: { type: String, required: true }
+});
+
+// 3. Create Model
+const Item = mongoose.model('Item', ItemSchema);
+
+/*
+==============================================================================
+| Exp 6: Routing using Express js                                            |
+| Exp 8: ...using rest api                                                   |
+==============================================================================
+*/
+// --- API ROUTES ---
+
+// (Exp 8) GET all items
+app.get('/api/items', async (req, res) => {
+  try {
+    const items = await Item.find();
+    res.json(items);
+  } catch (err) { res.status(500).json({ msg: 'Server Error' }); }
+});
+
+// (Exp 8) POST (create) a new item
+app.post('/api/items', async (req, res) => {
+  try {
+    const newItem = new Item({
+      name: req.body.name
+    });
+    const savedItem = await newItem.save();
+    res.json(savedItem);
+  } catch (err) { res.status(500).json({ msg: 'Server Error' }); }
+});
+
+// (Exp 8) DELETE an item
+app.delete('/api/items/:id', async (req, res) => {
+  try {
+    await Item.findByIdAndDelete(req.params.id);
+    res.json({ msg: 'Item deleted' });
+  } catch (err) { res.status(500).json({ msg: 'Server Error' }); }
+});
+
+// (Exp 5) Start server
+app.listen(PORT, () => {
+  console.log(`API Server (Database) running on http://localhost:${PORT}`);
+});
+
+
+/*
+================================================================================
+|                                                                              |
+|           FILE 3: NODE.JS FILE SERVER (File Operations)                      |
+|           LOCATION: server-files/server.js                                   |
+|           (This is the backend for React Example 1C)                         |
+|                                                                              |
+================================================================================
+SETUP STEPS:
+1. Create folder `server-files`.
+2. Inside `server-files`, run `npm init -y`.
+3. Run `npm install express cors`.
+4. Create a folder `server-files/managed_files`.
+5. Create file `server-files/server.js`.
+6. Copy/Paste ALL code from this section (FILE 3) into it.
+7. Run `node server.js` from inside the `server-files` folder.
+*/
+
+// (Exp 5) Import libraries
+const express = require('express');
+const cors = require('cors');
+const fs = require('fs'); // Node.js File System module
+const path = require('path'); // Node.js Path module
+
+// (Exp 5) Setup app
+const app = express();
+const PORT = 5001; // File Server runs on 5001
+
+// --- Middleware ---
+app.use(cors());
+app.use(express.json());
+
+// Path to the directory we will manage
+const FILES_DIR = path.join(__dirname, 'managed_files');
+
+/*
+==============================================================================
+| Exp 6: Routing using Express js (for File Operations)                      |
+==============================================================================
+*/
+// --- FILE API ROUTES ---
+
+// GET all files in the directory
+app.get('/files', (req, res) => {
+  fs.readdir(FILES_DIR, (err, files) => {
+    if (err) {
+      return res.status(500).json({ msg: 'Error reading files dir' });
+    }
+    res.json(files);
+  });
+});
+
+// POST to create a new file
+app.post('/createfile', (req, res) => {
+  const filename = req.body.filename;
+  if (!filename) {
+    return res.status(400).json({ msg: 'Filename is required' });
+  }
+  
+  // Sanitize filename (basic)
+  const safeFilename = path.basename(filename);
+  const filePath = path.join(FILES_DIR, safeFilename);
+  
+  fs.writeFile(filePath, 'This is a new file.', (err) => {
+    if (err) {
+      return res.status(500).json({ msg: 'Error creating file' });
+    }
+    res.json({ msg: 'File created successfully' });
+  });
+});
+
+// DELETE a file
+app.delete('/file/:filename', (req, res) => {
+  const filename = req.params.filename;
+  const filePath = path.join(FILES_DIR, path.basename(filename));
+
+  fs.unlink(filePath, (err) => {
+    if (err) {
+      return res.status(500).json({ msg: 'Error deleting file' });
+    }
+    res.json({ msg: 'File deleted successfully' });
+  });
+});
+
+// (Exp 5) Start server
+app.listen(PORT, () => {
+  console.log(`File Server running on http://localhost:${PORT}`);
+});
+
