@@ -1,0 +1,1235 @@
+powershell: Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned
+ Get-ExecutionPolicy -List
+npm install
+npm cache clean --force
+npx create-react-app my-app
+npm install cookie-parser
+npm install express-session
+npm install cors router dotenv mongodb express mongosh mongoose
+expt 1:
+eg1 hedy lamar:
+app.js
+export default function Profile() { 
+  const user = { 
+   name: 'Hedy Lamarr', 
+   imageUrl: 'https://i.imgur.com/yXOvdOSs.jpg', 
+   imageSize: 90, 
+  }; 
+   return ( 
+   <> 
+   <h1>{user.name}</h1> 
+   <img 
+   className="avatar" 
+   src={user.imageUrl} S
+   alt={'Photo of ' + user.name} 
+   style={{ 
+   width: user.imageSize, 
+   height: user.imageSize 
+   }} 
+   /> 
+   </> 
+   ); 
+  }
+eg 2:counters that update separately
+app.js
+import { useState } from 'react'; 
+export default function MyApp() { 
+ return ( 
+ <div> 
+ <h1>Counters that update separately</h1> 
+ <MyButton /> 
+ <MyButton /> 
+ </div> 
+ ); 
+} 
+function MyButton() { 
+ const [count, setCount] = useState(0); 
+ function handleClick() { 
+ setCount(count + 1); 
+ } 
+ return ( 
+ <button onClick={handleClick}>
+ Clicked {count} times 
+ </button> 
+ ); 
+} 
+eg3:true/false:
+app.js
+const products = [ 
+  { title: 'Cabbage', isFruit: false, id: 1 }, 
+  { title: 'Garlic', isFruit: false, id: 2 }, 
+  { title: 'Apple', isFruit: true, id: 3 }, 
+ ]; 
+ export default function ShoppingList() { 
+ const products = [ 
+  { title: 'Cabbage', isFruit: false, id: 1 }, 
+  { title: 'Garlic', isFruit: false, id: 2 }, 
+  { title: 'Apple', isFruit: true, id: 3 }, 
+ ]; 
+  const listItems = products.map(product => 
+  <li 
+  key={product.id} 
+  style={{ 
+  color: product.isFruit ? 'magenta' : 'darkgreen' 
+  }}
+  > 
+  {product.title} 
+  </li> 
+  ); 
+  return ( 
+  <ul>{listItems}</ul> 
+  ); 
+ } 
+ eg4:counter that update together
+app.js
+import { useState } from 'react'; 
+export default function MyApp() { 
+const [count, setCount] = useState(0); 
+function handleClick() { 
+setCount(count + 1); 
+} 
+return (
+<div> 
+<h1>Counters that update together</h1> 
+<MyButton count={count} onClick={handleClick} /> 
+<MyButton count={count} onClick={handleClick} /> 
+</div> 
+); 
+} 
+function MyButton({ count, onClick }) { 
+return ( 
+<button onClick={onClick}> 
+Clicked {count} times 
+</button> 
+); 
+}
+eg5:fruits veges in stock
+app.js
+function ProductCategoryRow({ category }) { return ( 
+<tr> 
+<th colSpan="2"> 
+{category} 
+</th> 
+</tr> 
+); 
+} 
+function ProductRow({ product }) { 
+const name = product.stocked ? product.name : <span style={{ color: 'red' }}> 
+{product.name} 
+</span>; 
+return ( 
+<tr> 
+<td>{name}</td> 
+<td>{product.price}</td> 
+</tr> 
+); 
+} 
+function ProductTable({ products }) {
+const rows = []; 
+let lastCategory = null; 
+products.forEach((product) => { if (product.category !== lastCategory) { rows.push( 
+<ProductCategoryRow 
+category={product.category} 
+key={product.category} /> 
+); 
+} 
+rows.push( 
+<ProductRow 
+product={product} 
+key={product.name} /> 
+); 
+lastCategory = product.category; }); 
+return ( 
+<table> 
+<thead> 
+<tr> 
+<th>Name</th> 
+<th>Price</th> 
+</tr> 
+</thead>
+<tbody>{rows}</tbody> 
+</table> 
+); 
+} 
+function SearchBar() { 
+return ( 
+<form> 
+<input type="text" placeholder="Search..." /> <label> 
+<input type="checkbox" /> 
+{' '} 
+Only show products in stock 
+</label> 
+</form> 
+); 
+} 
+function FilterableProductTable({ products }) { return ( 
+<div> 
+<SearchBar /> 
+<ProductTable products={products} /> </div> 
+); 
+}
+const PRODUCTS = [ 
+{category: "Fruits", price: "$1", stocked: true, name: "Apple"}, 
+{category: "Fruits", price: "$1", stocked: true, name: "Dragonfruit"}, 
+{category: "Fruits", price: "$2", stocked: false, name: "Passionfruit"}, 
+{category: "Vegetables", price: "$2", stocked: true, name: "Spinach"}, 
+{category: "Vegetables", price: "$4", stocked: false, name: "Pumpkin"}, 
+{category: "Vegetables", price: "$1", stocked: true, name: "Peas"} 
+]; 
+export default function App() { 
+return <FilterableProductTable products={PRODUCTS} />; 
+}
+exp 3: formhandling using react basic
+import React, { useState } from "react"; 
+import "./App.css";
+function App() { 
+ const [name, setName] = useState(""); 
+ const [age, setAge] = useState(""); 
+ const [location, setLocation] = useState("");  const [hobby, setHobby] = useState(""); 
+ const [submittedData, setSubmittedData] = useState(null); 
+ const handleSubmit = (event) => { 
+ event.preventDefault(); 
+ const userData = { name, age, location, hobby };  console.log("User Data Submitted:", userData);  setSubmittedData(userData); 
+ setName(""); 
+ setAge(""); 
+ setLocation(""); 
+ setHobby("");
+ alert("Data submitted successfully!"); 
+ }; 
+ return ( 
+ <div className="info-body"> 
+ <div> 
+ <h1 className="info-title">User Information Form</h1>  <form className="info-form" onSubmit={handleSubmit}>  <label className="info-label" htmlFor="name">Name:</label>  <input 
+ className="info-input" 
+ type="text" 
+ id="name" 
+ value={name} 
+ onChange={(e) => setName(e.target.value)}  required 
+ /> 
+ <label className="info-label" htmlFor="age">Age:</label>  <input 
+ className="info-input" 
+ type="number" 
+ id="age" 
+ value={age}
+ onChange={(e) => setAge(e.target.value)} 
+ required 
+ /> 
+ <label className="info-label" htmlFor="location">Location:</label>  <input 
+ className="info-input" 
+ type="text" 
+ id="location" 
+ value={location} 
+ onChange={(e) => setLocation(e.target.value)}  required 
+ /> 
+ <label className="info-label" htmlFor="hobby">Hobby:</label>  <input 
+ className="info-input" 
+ type="text" 
+ id="hobby" 
+ value={hobby} 
+ onChange={(e) => setHobby(e.target.value)} 
+ required 
+ />
+ <button className="info-btn" type="submit">  Submit 
+ </button> 
+ </form> 
+ {submittedData && ( 
+ <div className="info-display"> 
+ <h2>Your Info:</h2> 
+ <p><strong>Name:</strong> {submittedData.name}</p>  <p><strong>Age:</strong> {submittedData.age}</p>  <p><strong>Location:</strong> {submittedData.location}</p>  <p><strong>Hobby:</strong> {submittedData.hobby}</p>  </div> 
+ )} 
+ </div> 
+ </div> 
+ ); 
+} 
+export default App; 
+EXP4:FORM VALIDATION AND REACT ROUTING
+npm install react-router-dom
+app.js
+// App.js
+import React from "react";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+
+// Import your components
+import LandingPage from "./LandingPage";
+import UserInfoForm from "./userform";
+
+function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/userform" element={<UserInfoForm />} />
+      </Routes>
+    </BrowserRouter>
+  );
+}
+
+export default App;
+LandingPage.js
+import React from 'react';
+import './App.css'; // Import the CSS file for styling
+
+
+function LandingPage() {
+    // Function to handle the button click
+  const handleProceedClick = () => {
+    // Add your logic here
+    alert('Proceed button clicked!');
+    window.location.href = '/userform'; // Redirect to the UserInfoForm page
+  };
+
+
+  return (
+    <div className="landing-page-container">
+      <div className="hero">
+        <h1>Welcome to ReactTech!</h1>
+        <p>Click the button below to proceed:</p>
+        <form onSubmit={(e) => e.preventDefault()}> 
+          <button type="button" onClick={handleProceedClick}>
+            Proceed
+          </button>
+        </form>
+      </div>
+      
+    </div>
+  );
+}
+
+
+export default LandingPage;
+
+
+
+userform.js
+import React, { useState } from "react";
+import "./App.css"; // or "./form.css" if you prefer
+
+export default function UserInfoForm() {
+  const [userData, setUserData] = useState({
+    name: "",
+    age: "",
+    location: "",
+    hobby: "",
+  });
+
+  const [submittedData, setSubmittedData] = useState(null);
+
+  // ✅ Handle input change
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setUserData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  // ✅ Handle submit with in-page JS alerts
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    if (!userData.name.trim()) {
+      alert("Please enter your full name!");
+      return;
+    }
+
+    if (!userData.age) {
+      alert("Please enter your age!");
+      return;
+    } else if (userData.age < 1 || userData.age > 120) {
+      alert("Age must be between 1 and 120!");
+      return;
+    }
+
+    if (!userData.location.trim()) {
+      alert("Please enter your location!");
+      return;
+    }
+
+    if (!userData.hobby.trim()) {
+      alert("Please enter your hobby!");
+      return;
+    }
+
+    // ✅ If all fields are filled correctly
+    setSubmittedData(userData);
+    alert("Data submitted successfully!");
+
+    // Reset form
+    setUserData({
+      name: "",
+      age: "",
+      location: "",
+      hobby: "",
+    });
+  };
+
+  return (
+    <div className="info-root">
+      <h1 className="info-title">User Information Form</h1>
+
+      <form className="info-form" onSubmit={handleSubmit}>
+        <label className="info-label" htmlFor="name">Name:</label>
+        <input
+          type="text"
+          id="name"
+          name="name"
+          placeholder="Enter your full name"
+          value={userData.name}
+          onChange={handleChange}
+        />
+        <br /><br />
+
+        <label className="info-label" htmlFor="age">Age:</label>
+        <input
+          type="number"
+          id="age"
+          name="age"
+          placeholder="Enter your age"
+          value={userData.age}
+          onChange={handleChange}
+        />
+        <br /><br />
+
+        <label className="info-label" htmlFor="location">Location:</label>
+        <input
+          type="text"
+          id="location"
+          name="location"
+          placeholder="Enter your location"
+          value={userData.location}
+          onChange={handleChange}
+        />
+        <br /><br />
+
+        <label className="info-label" htmlFor="hobby">Hobby:</label>
+        <input
+          type="text"
+          id="hobby"
+          name="hobby"
+          placeholder="Enter your hobby"
+          value={userData.hobby}
+          onChange={handleChange}
+        />
+        <br /><br />
+
+        <button className="info-btn" type="submit">Submit</button>
+      </form>
+
+      {submittedData && (
+        <div className="info-display">
+          <h2>Your Info:</h2>
+          <p><strong>Name:</strong> {submittedData.name}</p>
+          <p><strong>Age:</strong> {submittedData.age}</p>
+          <p><strong>Location:</strong> {submittedData.location}</p>
+          <p><strong>Hobby:</strong> {submittedData.hobby}</p>
+        </div>
+      )}
+    </div>
+  );
+}
+
+EXPT 5:
+app.js
+import React, { useState } from "react";
+import newsData from "./news.json"; // ✅ Import must be at the very top
+
+const App = () => {
+  const [number, setNumber] = useState(0);
+
+  const fetchData = () => {
+    const totalArticles = newsData.articles.length;
+    const randomIndex = Math.floor(Math.random() * totalArticles);
+    setNumber(randomIndex);
+  };
+
+  const article = newsData.articles[number];
+
+  return (
+    <div style={{ padding: "20px", fontFamily: "Arial" }}>
+      <h1>India News</h1>
+
+      {article ? (
+        <div>
+          <h2>{article.title}</h2>
+          <a
+            href={article.url}
+            target="_blank"
+            rel="noopener noreferrer" // ✅ Added this to fix the warning
+          >
+            {article.url}
+          </a>
+          <p>{article.description}</p>
+          <p>{article.content}</p>
+        </div>
+      ) : (
+        <p>No news found</p>
+      )}
+
+      <button
+        onClick={fetchData}
+        style={{
+          marginTop: "20px",
+          padding: "10px 20px",
+          fontSize: "16px",
+          cursor: "pointer",
+        }}
+      >
+        Next News
+      </button>
+    </div>
+  );
+};
+
+export default App;
+
+news.json
+{
+    "articles": [
+      {
+        "title": "India wins gold at Olympics",
+        "url": "https://example.com/india-gold",
+        "description": "India's star athlete wins gold in the final race.",
+        "content": "In an incredible performance, India's athlete made history by securing gold at the Olympics."
+      },
+      {
+        "title": "New tech hub opens in Bangalore",
+        "url": "https://example.com/bangalore-tech",
+        "description": "Bangalore strengthens its position as India's Silicon Valley.",
+        "content": "The new facility will host several major startups and tech firms, boosting innovation in the region."
+      },
+      {
+        "title": "Monsoon brings heavy rains",
+        "url": "https://example.com/monsoon-rains",
+        "description": "Several states are on high alert as monsoon rains intensify.",
+        "content": "The Meteorological Department has issued warnings for coastal areas as rainfall continues across India."
+      }
+    ]
+  }
+  
+EXPT 6:
+mkdir node-backend
+app.js
+import React, { useEffect, useState } from "react";
+
+function App() {
+  const [data, setData] = useState(null);
+
+  // Fetch data from Node backend when the page loads
+  useEffect(() => {
+    fetch("http://localhost:3001") // your Node server endpoint
+      .then((response) => response.text())
+      .then((data) => setData(data))
+      .catch((error) => console.error("Error fetching data:", error));
+  }, []);
+
+  return (
+    <div style={{ padding: "20px", fontFamily: "Arial" }}>
+      <h1>React + Node Integration Example</h1>
+      {data ? <p>{data}</p> : <p>Loading...</p>}
+    </div>
+  );
+}
+
+export default App;
+in node-backend 
+server.js
+// server.js
+// Import the http module
+const http = require("http");
+
+
+// Create a server
+const server = http.createServer((req, res) => {
+  res.writeHead(200, { "Content-Type": "text/plain" });
+  res.end("Welcome to Food Delivery App 🚀\nCheck console logs for process flow!");
+});
+
+
+// Start the server on port 3000
+server.listen(3000, () => {
+  console.log("🍴 Food Delivery Server is running at http://localhost:3000\n");
+
+
+  console.log("👉 Customer places an order");
+
+
+  // Payment process (async simulation)
+  setTimeout(() => {
+    console.log("💳 Payment processed successfully");
+  }, 1000);
+
+
+  console.log("📝 Order is confirmed");
+
+
+  // Kitchen cooking (async)
+  setTimeout(() => {
+    console.log("👨‍🍳 Order is being cooked");
+  }, 0);
+
+
+  // Priority task - happens before other async tasks
+  process.nextTick(() => {
+    console.log("⚡ Logging order in system (nextTick runs before anything else)");
+  });
+
+
+  // Promise - after current synchronous tasks but before timers
+  Promise.resolve("📦 Packaging order").then(console.log);
+
+
+  // Delivery notification (runs after I/O events)
+  setImmediate(() => {
+    console.log("🚚 Order is ready for delivery (setImmediate callback)");
+  });
+
+
+  console.log("✅ Order flow is being tracked...\n");
+});
+
+http-server.js
+
+const http = require('http');
+const fs = require('fs');
+const url = require('url');
+const path = require('path');
+
+
+// Create the server
+const server = http.createServer((req, res) => {
+  let pathname = url.parse(req.url).pathname;
+
+
+  console.log(`Request for ${pathname} received`);
+
+
+  // Default to 'First.html' if the root is accessed
+  if (pathname == '/') {
+    pathname = '/First.html';  // Default to First.html
+  }
+
+
+  // Dynamically resolve the file path based on request
+  let filePath = path.join(__dirname, pathname);  // __dirname gives the current directory
+
+
+  // Print the full path to debug
+  console.log(`File path requested: ${filePath}`);
+
+
+  // Check if the file exists and serve it
+  fs.readFile(filePath, (err, data) => {
+    if (err) {
+      console.error(err);
+
+
+      // Send 404 if the file is not found
+      res.writeHead(404, { 'Content-Type': 'text/plain' });
+      res.write('404 - file not found');
+    } else {
+      // Serve the requested file
+      res.writeHead(200, { 'Content-Type': 'text/html' });
+      res.write(data.toString());
+    }
+
+
+    res.end();
+  });
+});
+
+
+// Start the server
+server.listen(8001, () => {
+  console.log('Server running on port 8001');
+});
+
+
+File-op.js
+const fs = require('fs');
+const path = require('path');
+
+
+// Specify the file path in the current directory
+const filePath = path.join(__dirname, 'fileoperations.txt');
+
+
+// Write to the file
+fs.writeFileSync(filePath, 'Hello, this is a test message!');
+console.log('File has been written successfully!');
+
+EXPT 7:
+npm init -y
+npm install express ejs
+node app.js
+App.js
+const express = require('express'); 
+const app = express(); 
+const usersRouter = require('./Users'); 
+const productsRouter = require('./Products'); 
+// Mount the routers with prefixes 
+app.use('/Users', usersRouter); 
+app.use('/Products', productsRouter); 
+// Basic root route 
+app.get('/', (req, res) => { 
+res.send('Welcome to the application!'); 
+}); 
+const PORT = 4000; 
+app.listen(PORT, () => { 
+console.log(`Server running on port ${PORT}`); 
+}); 
+
+nav.js
+const express=require("express")
+const app=express();
+const port=3008;
+
+app.get('/',(req,res)=>{
+    res.send("These is my home page");
+});
+
+app.get('/about',(req,res)=>{
+    res.status(200).send("These is my about page");
+});
+
+app.get('/contact',(req,res)=>{
+    res.send("These is my contact page");
+});
+
+app.listen(port,()=>{
+    console.log(`listening to port no ${port}`);
+});
+
+products.js
+const express = require('express'); 
+const router = express.Router(); 
+// Route for getting list of products 
+router.get('/', (req, res) => { 
+res.send('List of products'); 
+}); 
+// Route for getting details of a product by ID 
+router.get('/:id', (req, res) => {
+res.send(`Details for product ${req.params.id}`); 
+}); 
+module.exports = router; 
+
+express1.js
+const express = require('express'); 
+const router = express.Router(); 
+// Route for getting list of products 
+router.get('/', (req, res) => { 
+res.send('List of products'); 
+}); 
+// Route for getting details of a product by ID 
+router.get('/:id', (req, res) => {
+res.send(`Details for product ${req.params.id}`); 
+}); 
+module.exports = router; 
+
+express2.js
+var express = require('express');
+var app = express();
+
+
+app.get('/', function (req, res) {
+  console.log("Got a GET request for the homepage");
+  res.send('Hello GET');
+});
+
+
+app.post('/', function (req, res) {
+  console.log("Got a POST request for the homepage");
+  res.send('Hello POST');
+});
+
+
+app.delete('/del_user', function (req, res) {
+  console.log("Got a DELETE request for /del_user");
+  res.send('Hello DELETE');
+});
+
+
+app.get('/list_user', function (req, res) {
+  console.log("Got a GET request for /list_user");
+  res.send('Page Listing');
+});
+
+
+app.get('/ab*cd', function (req, res) {
+  console.log("Got a GET request for /ab*cd");
+  res.send('Page Pattern Match');
+});
+
+
+// ✅ Fixed listen block
+const PORT = 5006;
+const HOST = '127.0.0.1';
+
+
+app.listen(PORT, HOST, () => {
+  console.log(`Example app listening at http://${HOST}:${PORT}`);
+});
+
+
+message.js
+const express=require('express');
+var app=express();
+
+app.get('/',function(req,res){
+    res.send("Hello there these express example")
+});
+
+app.listen(1337,function(){
+    console.log('Listening at the port 1337');
+});
+server.js
+const express=require('express')
+const app= express()
+const bcrypt=require('bcrypt')
+app.use(express.json())
+const users=[]
+
+app.get('/users',(req,res)=>{
+    res.json(users)
+})
+
+app.post('/users', async(req,res) => {
+    try{
+        const salt = await bcrypt.genSalt()
+        const hashpass = await bcrypt.hash(req.body.password, salt)
+        console.log(salt)
+        console.log(hashpass)
+
+    
+const user = {name: req.body.name, password:hashpass}
+
+users.push(user)
+res.status(201).send()
+
+    }catch{
+        res.status(500).send()
+    }
+})
+
+
+app.post('/users/login', async(req,res)=>{
+    const user = users.find(user=> user.name = req.body.name)
+    if(user==null){
+        return res.status(400).send('cannot find user')
+    }
+    try{
+        if(await bcrypt.compare(req.body.password, user.password))
+{
+    res.send('sucessfully Logged in')
+} else{
+   res.send('Not Allowed')
+}
+    }
+catch{
+        res.status(500).send()
+    }
+})
+app.listen(8000)
+
+session.js
+var cookieParser = require('cookie-parser');
+var session = require('express-session');
+var express = require('express')
+var app = express();
+
+app.use(cookieParser());
+app.use(session({secret: "Shh, its a secret!",resave: true,
+saveUninitialized: true}));
+
+app.get('/', function(req, res){
+if(req.session.page_views){
+req.session.page_views++;
+res.send("You visited this page " + req.session.page_views + " times");
+} else {
+req.session.page_views = 1;
+res.send("Welcome to this page for the first time!");
+}   
+});
+
+app.listen(3009);      
+
+session1.js
+const express = require("express")
+const session = require('express-session')
+
+const app = express()
+var PORT = process.env.port || 3008
+app.use(session({
+	secret: 'Your_Secret_Key',resave: true,
+	saveUninitialized: true
+}))
+app.get("/", function(req, res){
+	// req.session.key = value
+	req.session.name = 'GeeksforGeeks'
+	return res.send("Session Set")
+})
+app.get("/session", function(req, res){
+var name = req.session.name
+return res.send(name)
+/* To destroy session you can use this function
+req.session.destroy(function(error){
+	console.log("Session Destroyed")
+	})
+*/
+})
+app.listen(PORT, function(error){
+	if(error) throw error
+	console.log("Server created Successfully on PORT :", PORT)
+})
+
+users.js
+const express = require('express'); 
+const router = express.Router(); 
+// Middleware specific to user routes 
+router.use((req, res, next) => { 
+console.log('User request received at:', Date.now()); next(); 
+}); 
+// Define user-related routes 
+router.get('/', (req, res) => { 
+res.send('List of users'); 
+}); 
+router.get('/:id', (req, res) => { 
+res.send(`Details for user ${req.params.id}`); }); 
+router.post('/', (req, res) => { 
+res.send('Create a new user'); 
+}); 
+module.exports = router; 
+
+EXPT 8:
+MongoDB 
+1. Install MongoDB Community Server from website below and install 
+https://www.mongodb.com/try/download/community 
+2. Now install the MongoDB shell for executing DB commands 
+https://www.mongodb.com/try/download/shell 
+3. Now open the mongosh exe file (It will open a shell and ask you for a URL), there you have to enter the New Connection URL from MongoDB to that mongosh shell. 
+Eg: mongodb://localhost:27017 
+Now you're ready to run commands or queries in the Mongosh shell. 
+To show Databases 
+test> show dbs; 
+admin 40.00 KiB 
+config 60.00 KiB 
+local 40.00 KiB 
+Create Database using mongosh 
+test> use blog; 
+switched to db blog 
+Create a Collection using mongosh blog> db.createCollection("posts") 
+{ ok: 1 } 
+Insert Documents 
+insertOne() 
+To insert a single document, use the insertOne() method.
+This method inserts a single object into the database. 
+blog> db.posts.insertOne({ 
+... title: "Gadar", 
+... body: "It an awesome film of Sunny deol", 
+... category: "Movie", 
+... likes: 100, 
+... tags: ["Movies","Events"], 
+... date: Date() 
+... }) 
+insertMany() 
+To insert multiple documents at once, use the insertMany() method. This method inserts an array of objects into the database. blog> db.posts.insertMany([
+... { 
+... title: "Post Title 2", 
+... body: "Body of post.", 
+... category: "Event", 
+... likes: 2, 
+... tags: ["news", "events"], ... date: Date() 
+... }, 
+... { 
+... title: "Post Title 3", 
+... body: "Body of post.", 
+... category: "Technology", ... likes: 3, 
+... tags: ["news", "events"], ... date: Date() 
+... }, 
+... { 
+... title: "Post Title 4", 
+... body: "Body of post.", 
+... category: "Event", 
+... likes: 4, 
+... tags: ["news", "events"], ... date: Date() 
+... } 
+... ])
+
+
+
+Find Data 
+There are 2 methods to find and select data from a MongoDB 
+collection, find() and findOne().
+find() 
+To select data from a collection in MongoDB, we can use the find() method. This method accepts a query object. If left empty, all documents will be returned. 
+blog> db.posts.find(); //It will Find all documents 
+blog> db.posts.findOne(); //It will Find one documents 
+blog> db.posts.find({category:"Event"}); //It will Find documents with events category blog> db.posts.find({},{title:1,date:1}); // It will Find documents with title and date blog> db.posts.find({},{_id:0,title:1,date:1}); 
+blog> db.posts.find({},{title:1,date:0}); // gives error if we try to specify both 0 and 1 in the same object 
+MongoServerError[Location31254]: Cannot do exclusion on field date in inclusion projection
+
+
+
+
+
+Update Document 
+
+db.posts.find( { title: "Post Title 1" } ) 
+db.posts.updateOne(
+  { title: "Post Title 1" },             // Filter (find this document)
+  { 
+    $set: {                              // Update operator
+      likes: 5,                          // New value
+      category: "Updated News",          // Optional: update multiple fields
+      body: "Updated body of the post."  // Optional
+    }
+  }
+)
+
+db.posts.updateOne( { title: "Post Title 1" }, { $set: { likes: 2 } } ) 
+db.posts.find( { title: "Post Title 1" } ) 
+{ 
+ _id: ObjectId('68ac2fad463c4a8621170430'), 
+ title: 'Post Title 1', 
+ body: 'Body of post.', 
+ category: 'News', 
+ likes: 2, 
+ tags: [ 
+ 'news', 
+ 'events' 
+ ],
+ date: 'Mon Aug 25 2025 15:11:01 GMT+0530 (India Standard Time)' } 
+
+Insert if not found 
+If you would like to insert the document if it is not found, you can use the upsert option.
+db.posts.updateOne( 
+ { title: "Post Title 5" },  { 
+ $set: 
+ { 
+ title: "Post Title 5",  body: "Body of post.",  category: "Event",  likes: 5, 
+ tags: ["news", "events"],  date: Date() 
+ } 
+ }, 
+ { upsert: true } 
+) 
+Blog>db.posts.find()
+
+
+
+updateMany() 
+The updateMany() method will update all documents that match the provided query. Update likes on all documents by 1. For this we will use the $inc (increment) operator: db.posts.updateMany({}, { $inc: { likes: 1 } }) 
+deleteOne() 
+The deleteOne() method will delete the first document that matches the query provided. db.posts.deleteOne({ title: "Post Title 5" }) 
+It will delete post title 5 
+deleteMany() 
+The deleteMany() method will delete all documents that match the query provided. db.posts.deleteMany({ category: "Technology" })
+Operators: 
+use supermarket
+switched to db supermarket 
+db.inventory.insertMany([{"_id":102,"item_name":"palak","price":80,"quantity":200,"category" :["vegitables","healthy","organic"]},{"_id":103,"item_name":"paneer","price":100,"quantity":50 ,"category":["dairy","healthy"]}]); 
+db.createCollection('inventory'); 
+db.inventory.insertMany([{"_id":101,"item_name":"chocolates","price":40,"quantity":80,"categ ory":["Chocolate","sweeets"]}]); 
+db.inventory.find();
+
+
+
+
+
+
+
+EXPT 9:
+npm install cors dotenv express mongodb mongosh express ejs router
+App.js
+import React, { useState, useEffect } from 'react';
+
+const API = 'http://localhost:3000/employees';
+
+function App() {
+  const [employees, setEmployees] = useState([]);
+  const [form, setForm] = useState({ name: '', age: '', city: '' });
+
+  const fetchEmployees = async () => {
+    const res = await fetch(API);
+    const data = await res.json();
+    setEmployees(data);
+  };
+
+  useEffect(() => { fetchEmployees(); }, []);
+
+  const handleChange = e => setForm({ ...form, [e.target.name]: e.target.value });
+
+  const handleSubmit = async e => {
+    e.preventDefault();
+    await fetch(API, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ...form, age: Number(form.age) })
+    });
+    setForm({ name: '', age: '', city: '' });
+    fetchEmployees();
+  };
+
+  const handleDelete = async id => {
+    await fetch(`${API}/${id}`, { method: 'DELETE' });
+    fetchEmployees();
+  };
+
+  return (
+    <div style={{ margin: '2rem' }}>
+      <h1>Employee CRUD</h1>
+      <form onSubmit={handleSubmit}>
+        <input name="name" placeholder="Name" value={form.name} onChange={handleChange} />
+        <input name="age" type="number" placeholder="Age" value={form.age} onChange={handleChange} />
+        <input name="city" placeholder="City" value={form.city} onChange={handleChange} />
+        <button type="submit">Add Employee</button>
+      </form>
+      <ul>
+        {employees.map(emp => (
+          <li key={emp._id}>
+            {emp.name} ({emp.age}) - {emp.city}
+            <button onClick={() => handleDelete(emp._id)}>Delete</button>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+export default App;
+DB.js
+const { MongoClient } = require('mongodb');
+const dotenv = require('dotenv');
+dotenv.config();
+const uri = process.env.MONGO_URI || 'mongodb://localhost:27017';
+const dbName = process.env.DB_NAME || 'company';
+const client = new MongoClient(uri);
+let _db;
+async function connect() {
+  if (!_db) {
+    await client.connect();
+    _db = client.db(dbName);
+    console.log(`Connected to MongoDB database: ${dbName}`);
+  }
+  return _db;
+}
+module.exports = { connect };
+
+
+employeeController.js
+const { ObjectId } = require('mongodb');
+const { getCollection } = require('./employeeModel');
+
+async function getEmployees(req, res) {
+  try {
+    const col = await getCollection();
+    const employees = await col.find({}).toArray();
+    res.json(employees);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+}
+
+async function createEmployee(req, res) {
+  try {
+    const col = await getCollection();
+    const result = await col.insertOne(req.body);
+    res.status(201).json({ insertedId: result.insertedId });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+}
+
+async function updateEmployee(req, res) {
+  try {
+    const { id } = req.params;
+    const col = await getCollection();
+    const result = await col.updateOne({ _id: new ObjectId(id) }, { $set: req.body });
+    res.json(result);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+}
+
+async function deleteEmployee(req, res) {
+  try {
+    const { id } = req.params;
+    const col = await getCollection();
+    const result = await col.deleteOne({ _id: new ObjectId(id) });
+    res.json(result);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+}
+
+module.exports = { getEmployees, createEmployee, updateEmployee, deleteEmployee };
+
+
+employeeModel.js
+const { connect } = require('./db');
+async function getCollection() {
+  const db = await connect();
+  return db.collection('Employee');
+}
+module.exports = { getCollection };
+employeeRoutes.js
+const express = require('express');
+const { getEmployees, createEmployee, updateEmployee, deleteEmployee } = require('./employeeController');
+const router = express.Router();
+router.get('/', getEmployees);
+router.post('/', createEmployee);
+router.put('/:id', updateEmployee);
+router.delete('/:id', deleteEmployee);
+module.exports = router;
+Index.js
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import App from './App';
+
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(<App />);
+server.js
+const express = require('express');
+const dotenv = require('dotenv');
+const cors = require('cors');
+const employeeRoutes = require('./employeeRoutes');
+
+
+dotenv.config();
+const app = express();
+const PORT = process.env.PORT || 3000;
+
+
+app.use(cors());
+app.use(express.json());
+
+
+app.get('/', (req, res) => res.send('Employee CRUD API running...'));
+app.use('/employees', employeeRoutes);
+
+
+app.listen(PORT, () => {
+  console.log(`Server running at http://localhost:${PORT}`);
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
