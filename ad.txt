@@ -1,0 +1,457 @@
+BACKEND
+studentController.js
+const { connect } = require('../db');
+const { ObjectId } = require('mongodb');
+
+// GET all students
+exports.getStudents = async (req, res) => {
+  try {
+    const db = await connect();
+    const students = await db.collection('student').find().toArray();
+    res.json(students);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to fetch students' });
+  }
+};
+
+// ADD student
+exports.addStudent = async (req, res) => {
+  try {
+    const db = await connect();
+    const result = await db.collection('student').insertOne(req.body);
+    res.status(201).json(result);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to add student' });
+  }
+};
+
+// UPDATE student
+exports.updateStudent = async (req, res) => {
+  try {
+    const db = await connect();
+    const result = await db.collection('student').updateOne(
+      { _id: new ObjectId(req.params.id) },
+      { $set: req.body }
+    );
+    res.json(result);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to update student' });
+  }
+};
+
+// DELETE student
+exports.deleteStudent = async (req, res) => {
+  try {
+    const db = await connect();
+    const result = await db.collection('student').deleteOne({ _id: new ObjectId(req.params.id) });
+    res.json(result);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to delete student' });
+  }
+};
+
+models/Student.js
+function getStudentCollection(db){
+    return db.collection('students');
+}
+module.exports={getStudentCollection};
+
+routes/studentRoutes.js
+const express=require('express');
+const router=express.Router();
+const{connect}=require('../db.js');
+const studentController=require('../controllers/studentController.js');
+
+//define routes
+router.get('/', studentController.getStudents);
+router.post('/', studentController.addStudent);
+router.put('/:id', studentController.updateStudent);
+router.delete('/:id', studentController.deleteStudent);
+
+module.exports =router;
+        
+db.js
+const { MongoClient } = require('mongodb');
+const dotenv = require('dotenv');
+dotenv.config();
+const uri = process.env.MONGO_URI || 'mongodb://localhost:27017';
+const dbName = process.env.DB_NAME || 'school';
+const client = new MongoClient(uri);
+let _db;
+async function connect() {
+  if (!_db) {
+    await client.connect();
+    _db = client.db(dbName);
+    console.log(`Connected to MongoDB database: ${dbName}`);
+  }
+  return _db;
+}
+module.exports = { connect };
+
+server.js
+const express =require('express');
+const cors =require('cors');
+const {connect}=require('./db.js');
+
+const app =express();
+app.use(cors());
+app.use(express.json());
+
+let db;
+connect().then(database=> 
+{
+    db=database;
+    console.log('Database is ready to use');
+}
+).catch(err => console.log(err));
+
+const studentRoutes =require('./routes/studentRoutes.js');
+app.use('/api/students',studentRoutes);
+
+const PORT =process.env.PORT || 5000;
+app.listen(PORT,() => console.log(`Server is running on port ${process.env.PORT|| 5000}`));
+
+.env
+PORT=5000
+MONGO_URI=mongodb://127.0.0.1:27017
+DB_NAME=school
+
+
+Frontend
+src/components/StudentForm.js
+import React, { useState } from 'react';
+
+export default function StudentForm({ onAdd }) {
+  const [form, setForm] = useState({ name: '', email: '', course: '' });
+  const [error, setError] = useState('');
+
+  const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!form.name || !form.email || !form.course) {
+      setError('All fields are required!');
+      return;
+    }
+    setError('');
+    onAdd(form);
+    setForm({ name: '', email: '', course: '' });
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="form">
+      <input
+        name="name"
+        value={form.name}
+        onChange={handleChange}
+        placeholder="Student Name"
+      />
+      <input
+        name="email"
+        value={form.email}
+        onChange={handleChange}
+        placeholder="Email"
+      />
+      <input
+        name="course"
+        value={form.course}
+        onChange={handleChange}
+        placeholder="Course"
+      />
+      <button type="submit">Add Student</button>
+      {error && <p className="error">{error}</p>}
+    </form>
+  );
+}
+
+../components/StudentList.js
+import React from 'react';
+import { Link } from 'react-router-dom';
+export default function StudentList({ students, onDelete }) {
+  return (
+    <div className="list">
+      <h2>Student Records</h2>
+      {students.length === 0 ? (
+        <p>No students found.</p>
+      ) : (
+        <ul>
+          {students.map((s) => (
+            <li key={s._id}>
+              <strong>{s.name}</strong> — {s.email} — {s.course}
+              <div>
+                <Link to={`/edit/${s._id}`}>Edit</Link>
+                <button onClick={() => onDelete(s._id)}>Delete</button>
+              </div>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
+
+App.js
+import React ,{useState,useEffect} from 'react';
+import { Routes, Route, Link } from 'react-router-dom';
+import StudentForm from './components/StudentForm';
+import StudentList from './components/StudentList';
+
+export default function App() {
+  const [students, setStudents] = useState([]);
+
+  const fetchStudents = async () => {
+    const res = await fetch('http://localhost:5000/api/students');
+    const data = await res.json();
+    setStudents(data);
+  };
+
+  useEffect(() => {
+    fetchStudents();
+  }, []);
+
+  const addStudent = async (student) => {
+    await fetch('http://localhost:5000/api/students', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(student),
+    });
+    fetchStudents();
+  };
+
+  const deleteStudent = async (id) => {
+    await fetch(`http://localhost:5000/api/students/${id}`, { method: 'DELETE' });
+    fetchStudents();
+  };
+
+  return (
+    <div className="App">
+      <h1>Student Management System</h1>
+      <StudentForm onAdd={addStudent} />
+      <StudentList students={students} onDelete={deleteStudent} />
+    </div>
+  );
+}
+Index.js
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import { BrowserRouter } from 'react-router-dom';
+import App from './App';
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(
+  <BrowserRouter>
+    <App />
+  </BrowserRouter>
+);
+
+.env
+SKIP_PREFLIGHT_CHECK=true
+
+################################################
+
+Exp 9
+
+################ App.js
+
+import React, { useState, useEffect } from 'react';
+
+const API = 'http://localhost:3000/employees';
+
+function App() {
+  const [employees, setEmployees] = useState([]);
+  const [form, setForm] = useState({ name: '', age: '', city: '' });
+
+  const fetchEmployees = async () => {
+    const res = await fetch(API);
+    const data = await res.json();
+    setEmployees(data);
+  };
+
+  useEffect(() => { fetchEmployees(); }, []);
+
+  const handleChange = e => setForm({ ...form, [e.target.name]: e.target.value });
+
+  const handleSubmit = async e => {
+    e.preventDefault();
+    await fetch(API, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ...form, age: Number(form.age) })
+    });
+    setForm({ name: '', age: '', city: '' });
+    fetchEmployees();
+  };
+
+  const handleDelete = async id => {
+    await fetch(`${API}/${id}`, { method: 'DELETE' });
+    fetchEmployees();
+  };
+
+  return (
+    <div style={{ margin: '2rem' }}>
+      <h1>Employee CRUD</h1>
+      <form onSubmit={handleSubmit}>
+        <input name="name" placeholder="Name" value={form.name} onChange={handleChange} />
+        <input name="age" type="number" placeholder="Age" value={form.age} onChange={handleChange} />
+        <input name="city" placeholder="City" value={form.city} onChange={handleChange} />
+        <button type="submit">Add Employee</button>
+      </form>
+      <ul>
+        {employees.map(emp => (
+          <li key={emp._id}>
+            {emp.name} ({emp.age}) - {emp.city}
+            <button onClick={() => handleDelete(emp._id)}>Delete</button>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+export default App;
+
+################ db.js
+
+const { MongoClient } = require('mongodb');
+const dotenv = require('dotenv');
+dotenv.config();
+const uri = process.env.MONGO_URI || 'mongodb://localhost:27017';
+const dbName = process.env.DB_NAME || 'company';
+const client = new MongoClient(uri);
+let _db;
+async function connect() {
+  if (!_db) {
+    await client.connect();
+    _db = client.db(dbName);
+    console.log(`Connected to MongoDB database: ${dbName}`);
+  }
+  return _db;
+}
+module.exports = { connect };
+
+################### employeeController.js
+
+const { ObjectId } = require('mongodb');
+const { getCollection } = require('./employeeModel');
+
+async function getEmployees(req, res) {
+  try {
+    const col = await getCollection();
+    const employees = await col.find({}).toArray();
+    res.json(employees);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+}
+
+async function createEmployee(req, res) {
+  try {
+    const col = await getCollection();
+    const result = await col.insertOne(req.body);
+    res.status(201).json({ insertedId: result.insertedId });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+}
+
+async function updateEmployee(req, res) {
+  try {
+    const { id } = req.params;
+    const col = await getCollection();
+    const result = await col.updateOne({ _id: new ObjectId(id) }, { $set: req.body });
+    res.json(result);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+}
+
+async function deleteEmployee(req, res) {
+  try {
+    const { id } = req.params;
+    const col = await getCollection();
+    const result = await col.deleteOne({ _id: new ObjectId(id) });
+    res.json(result);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+}
+
+module.exports = { getEmployees, createEmployee, updateEmployee, deleteEmployee };
+
+################## employeeModel.js
+
+const { connect } = require('./db');
+async function getCollection() {
+  const db = await connect();
+  return db.collection('Employee');
+}
+module.exports = { getCollection };
+
+################## employeeRoutes.js
+
+const express = require('express');
+const { getEmployees, createEmployee, updateEmployee, deleteEmployee } = require('./employeeController');
+const router = express.Router();
+router.get('/', getEmployees);
+router.post('/', createEmployee);
+router.put('/:id', updateEmployee);
+router.delete('/:id', deleteEmployee);
+module.exports = router;
+
+##################### index.js
+
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import App from './App';
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(<App />);
+
+###################### server.js
+
+const express = require('express');
+const dotenv = require('dotenv');
+const cors = require('cors');
+const employeeRoutes = require('./employeeRoutes');
+
+dotenv.config();
+const app = express();
+const PORT = process.env.PORT || 3000;
+
+app.use(cors());
+app.use(express.json());
+
+app.get('/', (req, res) => res.send('Employee CRUD API running...'));
+app.use('/employees', employeeRoutes);
+
+app.listen(PORT, () => {
+  console.log(`Server running at http://localhost:${PORT}`);
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
